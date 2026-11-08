@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👗 Wardrobe Manager - Sistem Pengelola Lemari Pakaian</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">👗</span>
+                <h1>My CamFit</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-page="wardrobe">
+                    <span class="nav-icon">🧥</span>
+                    <span>My Collect</span>
+                </li>
+                <li class="nav-item" data-page="grouping">
+                    <span class="nav-icon">📊</span>
+                    <span>Pengelompokan</span>
+                </li>
+                <li class="nav-item" data-page="outfits">
+                    <span class="nav-icon">✨</span>
+                    <span>Match</span>
+                </li>
+                <li class="nav-item" data-page="favorites">
+                    <span class="nav-icon">❤️</span>
+                    <span>Favorit</span>
+                </li>
+                <li class="nav-item" data-page="schedule">
+                    <span class="nav-icon">📅</span>
+                    <span>DayFit</span>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <p>Total Pakaian: <span id="total-clothes">0</span></p>
+                <button class="btn btn-sm btn-secondary" onclick="loadSampleData()" style="margin-top:8px; width:100%;">📦 Muat Data Contoh</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page: Lemari Pakaian -->
+            <section id="page-wardrobe" class="page active">
+                <div class="page-header">
+                    <h2>🧥 My Collect</h2>
+                    <button class="btn btn-primary" onclick="openAddModal()">
+                        <span>+</span> Tambah Pakaian
+                    </button>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label>Kategori:</label>
+                        <select id="filter-category" onchange="filterWardrobe()">
+                            <option value="all">Semua</option>
+                            <option value="Baju">Baju</option>
+                            <option value="Celana">Celana</option>
+                            <option value="Rok">Rok</option>
+                            <option value="Jaket">Jaket</option>
+                            <option value="Dress">Dress</option>
+                            <option value="Aksesoris">Aksesoris</option>
+                            <option value="Sepatu">Sepatu</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Warna:</label>
+                        <select id="filter-color" onchange="filterWardrobe()">
+                            <option value="all">Semua</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Cari:</label>
+                        <input type="text" id="filter-search" placeholder="Cari pakaian..." oninput="filterWardrobe()">
+                    </div>
+                </div>
+
+                <div id="wardrobe-grid" class="clothes-grid">
+                    <!-- Items will be rendered here -->
+                </div>
+
+                <div id="empty-wardrobe" class="empty-state">
+                    <span class="empty-icon">👔</span>
+                    <h3>Lemari masih kosong</h3>
+                    <p>Mulai tambahkan pakaian Anda ke dalam sistem</p>
+                    <button class="btn btn-primary" onclick="openAddModal()">+ Tambah Pakaian Pertama</button>
+                </div>
+            </section>
+
+            <!-- Page: Pengelompokan -->
+            <section id="page-grouping" class="page">
+                <div class="page-header">
+                    <h2>📊 Pengelompokan Pakaian</h2>
+                </div>
+
+                <div class="grouping-tabs">
+                    <button class="tab-btn active" data-group="color" onclick="switchGroupTab(this)">🎨 Berdasarkan Warna</button>
+                    <button class="tab-btn" data-group="motif" onclick="switchGroupTab(this)">🔲 Berdasarkan Motif</button>
+                    <button class="tab-btn" data-group="fabric" onclick="switchGroupTab(this)">🧵 Berdasarkan Bahan</button>
+                </div>
+
+                <div id="grouping-content" class="grouping-content">
+                    <!-- Groups will be rendered here -->
+                </div>
+            </section>
+
+            <!-- Page: Rekomendasi Outfit -->
+            <section id="page-outfits" class="page">
+                <div class="page-header">
+                    <h2>✨ Match</h2>
+                    <button class="btn btn-secondary" onclick="generateOutfits()">
+                        🔄 Generate Ulang
+                    </button>
+                </div>
+
+                <div class="outfit-filters">
+                    <div class="filter-group">
+                        <label>Gaya:</label>
+                        <select id="outfit-style" onchange="generateOutfits()">
+                            <option value="all">Semua Gaya</option>
+                            <option value="casual">Casual</option>
+                            <option value="formal">Formal</option>
+                            <option value="sporty">Sporty</option>
+                            <option value="elegant">Elegant</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Skema Warna:</label>
+                        <select id="outfit-color-scheme" onchange="generateOutfits()">
+                            <option value="all">Semua</option>
+                            <option value="monochrome">Monokrom</option>
+                            <option value="complementary">Komplementer</option>
+                            <option value="analogous">Analog</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="outfits-grid" class="outfits-grid">
+                    <!-- Outfit recommendations will be rendered here -->
+                </div>
+
+                <div id="empty-outfits" class="empty-state" style="display:none;">
+                    <span class="empty-icon">👚</span>
+                    <h3>Belum bisa membuat rekomendasi</h3>
+                    <p>Tambahkan minimal beberapa atasan dan bawahan ke lemari pakaian</p>
+                </div>
+            </section>
+
+            <!-- Page: Favorit -->
+            <section id="page-favorites" class="page">
+                <div class="page-header">
+                    <h2>❤️ Outfit Favorit</h2>
+                </div>
+
+                <div id="favorites-grid" class="outfits-grid">
+                    <!-- Favorite outfits will be rendered here -->
+                </div>
+
+                <div id="empty-favorites" class="empty-state">
+                    <span class="empty-icon">💝</span>
+                    <h3>Belum ada outfit favorit</h3>
+                    <p>Tekan tombol ❤️ pada rekomendasi outfit untuk menyimpannya</p>
+                </div>
+            </section>
+
+            <!-- Page: Jadwal -->
+            <section id="page-schedule" class="page">
+                <div class="page-header">
+                    <h2>📅 DayFit</h2>
+                </div>
+
+                <div class="schedule-container">
+                    <div class="week-view">
+                        <div class="day-column" data-day="Senin">
+                            <div class="day-header">
+                                <h3>Senin</h3>
+                                <button class="btn-icon" onclick="openScheduleModal('Senin')" title="Tambah Jadwal">+</button>
+                            </div>
+                            <div class="day-slots" id="schedule-Senin"></div>
+                        </div>
+                        <div class="day-column" data-day="Selasa">
+                            <div class="day-header">
+                                <h3>Selasa</h3>
+                                <button class="btn-icon" onclick="openScheduleModal('Selasa')" title="Tambah Jadwal">+</button>
+                            </div>
+                            <div class="day-slots" id="schedule-Selasa"></div>
+                        </div>
+                        <div class="day-column" data-day="Rabu">
+                            <div class="day-header">
+                                <h3>Rabu</h3>
+                                <button class="btn-icon" onclick="openScheduleModal('Rabu')" title="Tambah Jadwal">+</button>
+                            </div>
+                            <div class="day-slots" id="schedule-Rabu"></div>
+                        </div>
+                        <div class="day-column" data-day="Kamis">
+                            <div class="day-header">
+                                <h3>Kamis</h3>
+                                <button class="btn-icon" onclick="openScheduleModal('Kamis')" title="Tambah Jadwal">+</button>
+                            </div>
+                            <div class="day-slots" id="schedule-Kamis"></div>
+                        </div>
+                        <div class="day-column" data-day="Jumat">
+                            <div class="day-header">
+                                <h3>Jumat</h3>
+                                <button class="btn-icon" onclick="openScheduleModal('Jumat')" title="Tambah Jadwal">+</button>
+                            </div>
+                            <div class="day-slots" id="schedule-Jumat"></div>
+                        </div>
+                        <div class="day-column" data-day="Sabtu">
+                            <div class="day-header weekend">
+                                <h3>Sabtu</h3>
+                                <button class="btn-icon" onclick="openScheduleModal('Sabtu')" title="Tambah Jadwal">+</button>
+                            </div>
+                            <div class="day-slots" id="schedule-Sabtu"></div>
+                        </div>
+                        <div class="day-column" data-day="Minggu">
+                            <div class="day-header weekend">
+                                <h3>Minggu</h3>
+                                <button class="btn-icon" onclick="openScheduleModal('Minggu')" title="Tambah Jadwal">+</button>
+                            </div>
+                            <div class="day-slots" id="schedule-Minggu"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal: Tambah Pakaian -->
+    <div id="modal-add" class="modal-overlay" onclick="closeModalOnOverlay(event, 'modal-add')">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-add-title">Tambah Pakaian Baru</h3>
+                <button class="btn-close" onclick="closeModal('modal-add')">&times;</button>
+            </div>
+            <form id="form-add-clothes" onsubmit="saveClothes(event)">
+                <input type="hidden" id="edit-id" value="">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="clothes-name">Nama Pakaian *</label>
+                        <input type="text" id="clothes-name" required placeholder="Contoh: Kemeja Biru">
+                    </div>
+                    <div class="form-group">
+                        <label for="clothes-category">Kategori *</label>
+                        <select id="clothes-category" required>
+                            <option value="">Pilih Kategori</option>
+                            <option value="Baju">Baju / Atasan</option>
+                            <option value="Celana">Celana</option>
+                            <option value="Rok">Rok</option>
+                            <option value="Jaket">Jaket / Outer</option>
+                            <option value="Dress">Dress</option>
+                            <option value="Aksesoris">Aksesoris</option>
+                            <option value="Sepatu">Sepatu</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clothes-color">Warna *</label>
+                        <select id="clothes-color" required>
+                            <option value="">Pilih Warna</option>
+                            <option value="Hitam">⬛ Hitam</option>
+                            <option value="Putih">⬜ Putih</option>
+                            <option value="Merah">🟥 Merah</option>
+                            <option value="Biru">🟦 Biru</option>
+                            <option value="Hijau">🟩 Hijau</option>
+                            <option value="Kuning">🟨 Kuning</option>
+                            <option value="Abu-abu">🔲 Abu-abu</option>
+                            <option value="Coklat">🟫 Coklat</option>
+                            <option value="Pink">💗 Pink</option>
+                            <option value="Ungu">🟪 Ungu</option>
+                            <option value="Orange">🟧 Orange</option>
+                            <option value="Krem">🔳 Krem</option>
+                            <option value="Navy">🔵 Navy</option>
+                            <option value="Maroon">🔴 Maroon</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clothes-motif">Motif *</label>
+                        <select id="clothes-motif" required>
+                            <option value="">Pilih Motif</option>
+                            <option value="Polos">Polos</option>
+                            <option value="Garis">Garis / Stripes</option>
+                            <option value="Kotak">Kotak-kotak / Plaid</option>
+                            <option value="Bunga">Bunga / Floral</option>
+                            <option value="Polkadot">Polkadot</option>
+                            <option value="Batik">Batik</option>
+                            <option value="Abstrak">Abstrak</option>
+                            <option value="Geometris">Geometris</option>
+                            <option value="Tie-dye">Tie-dye</option>
+                            <option value="Camo">Camo / Loreng</option>
+                            <option value="Denim">Denim wash</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clothes-fabric">Bahan Kain *</label>
+                        <select id="clothes-fabric" required>
+                            <option value="">Pilih Bahan</option>
+                            <option value="Katun">Katun / Cotton</option>
+                            <option value="Polyester">Polyester</option>
+                            <option value="Denim">Denim</option>
+                            <option value="Linen">Linen</option>
+                            <option value="Sutra">Sutra / Silk</option>
+                            <option value="Wool">Wool</option>
+                            <option value="Satin">Satin</option>
+                            <option value="Chiffon">Chiffon</option>
+                            <option value="Kulit">Kulit / Leather</option>
+                            <option value="Rajut">Rajut / Knit</option>
+                            <option value="Fleece">Fleece</option>
+                            <option value="Spandex">Spandex</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clothes-style">Gaya</label>
+                        <select id="clothes-style">
+                            <option value="casual">Casual</option>
+                            <option value="formal">Formal</option>
+                            <option value="sporty">Sporty</option>
+                            <option value="elegant">Elegant</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label for="clothes-notes">Catatan (opsional)</label>
+                    <textarea id="clothes-notes" placeholder="Catatan tambahan..." rows="2"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add')">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Jadwal Outfit -->
+    <div id="modal-schedule" class="modal-overlay" onclick="closeModalOnOverlay(event, 'modal-schedule')">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="schedule-modal-title">Jadwalkan Outfit</h3>
+                <button class="btn-close" onclick="closeModal('modal-schedule')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="schedule-day" value="">
+
+                <div class="form-group">
+                    <label>Pilih Outfit Favorit:</label>
+                    <div id="schedule-outfit-list" class="schedule-outfit-list">
+                        <!-- Favorite outfits for selection -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="schedule-occasion">Acara / Keterangan:</label>
+                    <input type="text" id="schedule-occasion" placeholder="Contoh: Kerja, Jalan-jalan, Meeting...">
+                </div>
+
+                <div class="form-group">
+                    <label>Jadwalkan untuk hari:</label>
+                    <div id="schedule-days-select" class="days-checkboxes">
+                        <label class="day-checkbox"><input type="checkbox" value="Senin"> Senin</label>
+                        <label class="day-checkbox"><input type="checkbox" value="Selasa"> Selasa</label>
+                        <label class="day-checkbox"><input type="checkbox" value="Rabu"> Rabu</label>
+                        <label class="day-checkbox"><input type="checkbox" value="Kamis"> Kamis</label>
+                        <label class="day-checkbox"><input type="checkbox" value="Jumat"> Jumat</label>
+                        <label class="day-checkbox"><input type="checkbox" value="Sabtu"> Sabtu</label>
+                        <label class="day-checkbox"><input type="checkbox" value="Minggu"> Minggu</label>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('modal-schedule')">Batal</button>
+                    <button type="button" class="btn btn-primary" onclick="saveSchedule()">Jadwalkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Detail Outfit -->
+    <div id="modal-outfit-detail" class="modal-overlay" onclick="closeModalOnOverlay(event, 'modal-outfit-detail')">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3>Detail Outfit</h3>
+                <button class="btn-close" onclick="closeModal('modal-outfit-detail')">&times;</button>
+            </div>
+            <div class="modal-body" id="outfit-detail-content">
+                <!-- Outfit detail will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
